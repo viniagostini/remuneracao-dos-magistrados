@@ -1,0 +1,27 @@
+{
+  "name": "remuneracao-dos-magistrados",
+  "version": "0.0.1",
+  "description": "Scrapper + Parser de dados de planilhas de remuneração dos magistrados.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/viniagostini/remuneracao-dos-magistrados.git"
+  },
+  "keywords": [
+    "scrapper",
+    "dados-abertos",
+    "justica"
+  ],
+  "author": "Vinicius A. Agostini",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/viniagostini/remuneracao-dos-magistrados/issues"
+  },
+  "homepage": "https://github.com/viniagostini/remuneracao-dos-magistrados#readme",
+  "dependencies": {
+    "xlsx": "^0.13.4"
+  }
+}
