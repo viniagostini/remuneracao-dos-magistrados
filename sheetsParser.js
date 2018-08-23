@@ -39,18 +39,20 @@ const getDireitosEventuaisSheet = sheetObject => sheetObject["Direitos Eventuais
 const getDadosCadastraisSheet = sheetsObject => sheetObject["Dados Cadastrais"] ||
                                                 sheetObject['Dados_Cadastrais'];
 
-
-const isMagistradoDataLine = (params) => {
-  
-}
-
 //TODO: implement
 const clearData = (data, type) => data;
 
-//TODO: implement
-const isValidLine = line => {
-    return true;
-}
+/**
+ * Checks if the line has the number of elements to fill the 
+ * fields and if the the first fields has any content.
+ * 
+ * @param {Array} line 
+ * @param {Integer} fieldsLength 
+ * 
+ * @returns {Boolean} true if it is a valid line.
+ */
+const isValidLine = (line, fieldsLength) => line.length >= fieldsLength && 
+                                            !!line[1] && !!line[2] && line[1].length > 3;
 
 //TODO: implement
 const getFistDataLine = (sheetObject) => {
@@ -63,7 +65,7 @@ const getDataFromSheet = (sheetObject, fields) => {
     const firstDataLine = getFistDataLine(sheetObject);
 
     sheetObject.forEach((line, index) => {
-        if (index < firstDataLine || !isValidLine(line)) return;
+        if (index < firstDataLine || !isValidLine(line, fields.length)) return;
         
         const magistradoData = {};
 
@@ -106,4 +108,4 @@ const sheetJson = sheetsService.parseSheetsToJson(['./downloaded-sheets/abril-20
 const contrachequeSheet = getContrachequeSheet(sheetJson['abril-2018-0dd715f156597273f48327975e64d9ab.xls']);
 const contrachequeData = getContrachequeData(contrachequeSheet);
 
-console.log(contrachequeData);
+console.log(contrachequeData.pop())
