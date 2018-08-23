@@ -1,11 +1,21 @@
 const utils = require('./utils');
 const sheetsService = require('./sheetsService');
 
+/**
+ * 
+ * @param {Object} sheetsJsonObject - Object where the keys are the file name and 
+ *                                    the value is the sheetObject.
+ * @returns
+ */
 const sheetsParser = (sheetsJsonObject) => {
 
 };
 
-
+/**
+ * 
+ * @param {String} fileName 
+ * @param {Object} sheetObject 
+ */
 const parseSheet = (fileName, sheetObject) => {
     const mes_ano_referencia = utils.parseFileNameToDate(fileName);
     
@@ -54,10 +64,23 @@ const clearData = (data, type) => data;
 const isValidLine = (line, fieldsLength) => line.length >= fieldsLength && 
                                             !!line[1] && !!line[2] && line[1].length > 3;
 
-//TODO: implement
+/**
+ * Returns the first data line of the sheet object.
+ * 
+ * @param {Object} sheetObject 
+ */
 const getFistDataLine = (sheetObject) => {
-  return 1;
-}
+  let firstDataLine;
+
+  sheetObject.some((line, index) => {
+      firstDataLine = index + 1;
+      return line.length > 0 && line[0] && line[1] && 
+             (line[0].toLowerCase().includes('cpf')) &&
+             (line[1].toLowerCase().includes('nome'));
+  });
+
+  return firstDataLine;
+};
 
 
 const getDataFromSheet = (sheetObject, fields) => {
@@ -108,4 +131,4 @@ const sheetJson = sheetsService.parseSheetsToJson(['./downloaded-sheets/abril-20
 const contrachequeSheet = getContrachequeSheet(sheetJson['abril-2018-0dd715f156597273f48327975e64d9ab.xls']);
 const contrachequeData = getContrachequeData(contrachequeSheet);
 
-console.log(contrachequeData.pop())
+console.log(contrachequeData)
