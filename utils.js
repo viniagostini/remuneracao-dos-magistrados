@@ -28,4 +28,15 @@ const parseFileNameToDate = (fileName) => {
   return dateFormater(`${namesList[0]}-${namesList[1]}`);
 };
 
-module.exports = {dateFormater, parseFileNameToDate};
+const clearNumberData = (dirtyNumber) => {
+  if (!dirtyNumber) return 0;
+  const formatedString = dirtyNumber.replace(/,/g, '').replace('R$', '').trim();
+  return formatedString !== '-' ? parseFloat(formatedString) : 0;
+};
+
+const clearTextData = (dirtyText) => {
+  if (!dirtyText) return '';
+  return dirtyText.trim();
+};
+
+module.exports = {dateFormater, parseFileNameToDate, clearNumberData, clearTextData};

@@ -24,7 +24,7 @@ const parseSheet = (fileName, sheetObject) => {
     // returns [{magistrado}]
 };
 
-
+//TODO: Find a better strategy than just list every possibility of sheet name.
 const getContrachequeSheet = sheetObject => sheetObject["Contracheque"];
 
 const getSubsidioSheet = sheetObject => sheetObject["Subsídio - Direitos Pessoais"] ||
@@ -46,11 +46,23 @@ const getDireitosEventuaisSheet = sheetObject => sheetObject["Direitos Eventuais
                                                  sheetObject['Direitos_Eventuais'] ||
                                                  sheetObject['Direitos Eventuais(3)'];
 
-const getDadosCadastraisSheet = sheetsObject => sheetObject["Dados Cadastrais"] ||
+const getDadosCadastraisSheet = sheetObject => sheetObject["Dados Cadastrais"] ||
                                                 sheetObject['Dados_Cadastrais'];
 
-//TODO: implement
-const clearData = (data, type) => data;
+/**
+ * Sanitize the passed value acordind to the type.
+ * 
+ * @param {String} data - value to be sanitized
+ * @param {String} type - Can be: text | number 
+ */
+const clearData = (data, type) => {
+    if (type === 'number') {
+        return utils.clearNumberData(data);
+    } else {
+        return utils.clearTextData(data);
+    }
+};
+
 
 /**
  * Checks if the line has the number of elements to fill the 
@@ -124,11 +136,80 @@ const getContrachequeData = contrachequeSheet => {
     ];
 
     return getDataFromSheet(contrachequeSheet, fields);
-}
+};
+
+const getSubsidioData = subsidioSheet => {
+    const fields = [
+        { fieldName: 'cpf', type: 'text' },
+        { fieldName: 'nome', type: 'text', key: true },
+        { fieldName: 'abono_de_permanencia', type: 'number' },
+        { fieldName: 'subsidio_outra1', type: 'number' },
+        { fieldName: 'subsidio_detalhe1', type: 'text' },
+        { fieldName: 'subsidio_outra2', type: 'number' },
+        { fieldName: 'subsidio_detalhe2', type: 'text' },
+        { fieldName: 'total_de_direitos_pessoais', type: 'number' },
+    ];
+
+    return getDataFromSheet(subsidioSheet, fields);
+};
+
+const getIndenizacoesData = indenizacoesSheet => {
+    const fields = [
+        { fieldName: 'cpf', type: 'text' },
+        { fieldName: 'nome', type: 'text', key: true },
+        { fieldName: 'auxilio_alimentacao', type: 'number' },
+        { fieldName: 'auxilio_pre_escolar', type: 'number' },
+        { fieldName: 'auxilio_saude', type: 'number' },
+        { fieldName: 'auxilio_natalidade', type: 'number' },
+        { fieldName: 'auxilio_moradia', type: 'number' },
+        { fieldName: 'ajuda_de_custo', type: 'number' },
+        { fieldName: 'indenizacoes_outra1', type: 'number' },
+        { fieldName: 'indenizacoes_detalhe1', type: 'text' },
+        { fieldName: 'indenizacoes_outra2', type: 'number' },
+        { fieldName: 'indenizacoes_detalhe2', type: 'text' },
+        { fieldName: 'indenizacoes_outra3', type: 'number' },
+        { fieldName: 'indenizacoes_detalhe3', type: 'text' },
+        { fieldName: 'total_indenizacoes', type: 'number' },
+    ];
+
+    return getDataFromSheet(indenizacoesSheet, fields);
+};
 
 
-const sheetJson = sheetsService.parseSheetsToJson(['./downloaded-sheets/abril-2018-0dd715f156597273f48327975e64d9ab.xls']);
-const contrachequeSheet = getContrachequeSheet(sheetJson['abril-2018-0dd715f156597273f48327975e64d9ab.xls']);
-const contrachequeData = getContrachequeData(contrachequeSheet);
+const getDireitosEventuaisData = direitosEventuaisSheet => {
+    const fields = [
+        { fieldName: 'cpf', type: 'text' },
+        { fieldName: 'nome', type: 'text', key: true },
+        { fieldName: 'abono_contitucional_de_1_3_de_ferias', type: 'number' },
+        { fieldName: 'indenizacao_de_ferias', type: 'number' },
+        { fieldName: 'antecipacao_de_ferias', type: 'number' },
+        { fieldName: 'gratificacao_natalina', type: 'number' },
+        { fieldName: 'antecipacao_de_gratificacao_natalina', type: 'number' },
+        { fieldName: 'substituicao', type: 'number' },
+        { fieldName: 'gratificacao_por_exercicio_cumulativo', type: 'number' },
+        { fieldName: 'gratificacao_por_encargo_curso_concurso', type: 'number' },
+        { fieldName: 'pagamento_em_retroativos', type: 'number' },
+        { fieldName: 'jeton', type: 'number' },
+        { fieldName: 'direitos_eventuais_outra1', type: 'number' },
+        { fieldName: 'direitos_eventuais_detalhe1', type: 'text' },
+        { fieldName: 'direitos_eventuais_outra2', type: 'number' },
+        { fieldName: 'direitos_eventuais_detalhe2', type: 'text' },
+        { fieldName: 'total_de_direitos_eventuais', type: 'number' },
+    ];
 
-console.log(contrachequeData)
+    return getDataFromSheet(direitosEventuaisSheet, fields);
+};
+
+const getDadosCadastraisData = dadosCadastraisSheet => {
+    const fields = [
+        { fieldName: 'cpf', type: 'text' },
+        { fieldName: 'nome', type: 'text', key: true },
+        { fieldName: 'matricula', type: 'text' },
+        { fieldName: 'lotacao_de_origem', type: 'text' },
+        { fieldName: 'orgao_de_origem', type: 'text' },
+        { fieldName: 'cargo_de_origem', type: 'text' },
+        
+    ];
+
+    return getDataFromSheet(dadosCadastraisSheet, fields);
+};
