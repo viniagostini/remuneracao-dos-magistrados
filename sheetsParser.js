@@ -19,7 +19,7 @@ const sheetsParser = (sheetsJsonObject) => {
 const parseSheet = (fileName, sheetObject) => {
     const mes_ano_referencia = utils.parseFileNameToDate(fileName);
     
-
+    
 
     // returns [{magistrado}]
 };
@@ -94,7 +94,12 @@ const getFistDataLine = (sheetObject) => {
   return firstDataLine;
 };
 
-
+/**
+ * Given a sheetObject and an array of fields, extracts the sheet data according to the fields.
+ * 
+ * @param {Object} sheetObject - The sheet object.
+ * @param {Array} fields - An array of the itens that will be collected from each line of the sheet. 
+ */
 const getDataFromSheet = (sheetObject, fields) => {
     const sheetData = [];
     const firstDataLine = getFistDataLine(sheetObject);
@@ -113,7 +118,12 @@ const getDataFromSheet = (sheetObject, fields) => {
 
     return sheetData; 
 };
-       
+
+/**
+ * Returns the sheet data, clear, sanitized and formated.
+ * 
+ * @param {Object} contrachequeSheet - Sheet object containing data from "Contracheque".
+ */
 const getContrachequeData = contrachequeSheet => {
     const fields = [
         { fieldName: 'cpf', type: 'text' },
@@ -138,6 +148,11 @@ const getContrachequeData = contrachequeSheet => {
     return getDataFromSheet(contrachequeSheet, fields);
 };
 
+/**
+ * Returns the sheet data, clear, sanitized and formated.
+ * 
+ * @param {Object} subsidioSheet - Sheet object containing data from "Subsídios".
+ */
 const getSubsidioData = subsidioSheet => {
     const fields = [
         { fieldName: 'cpf', type: 'text' },
@@ -153,6 +168,11 @@ const getSubsidioData = subsidioSheet => {
     return getDataFromSheet(subsidioSheet, fields);
 };
 
+/**
+ * Returns the sheet data, clear, sanitized and formated.
+ * 
+ * @param {Object} indenizacoesSheet - Sheet object containing data from "Indenizções".
+ */
 const getIndenizacoesData = indenizacoesSheet => {
     const fields = [
         { fieldName: 'cpf', type: 'text' },
@@ -175,7 +195,11 @@ const getIndenizacoesData = indenizacoesSheet => {
     return getDataFromSheet(indenizacoesSheet, fields);
 };
 
-
+/**
+ * Returns the sheet data, clear, sanitized and formated.
+ * 
+ * @param {Object} direitosEventuaisSheet - Sheet object containing data from "Direitos Eventuais".
+ */
 const getDireitosEventuaisData = direitosEventuaisSheet => {
     const fields = [
         { fieldName: 'cpf', type: 'text' },
@@ -200,6 +224,11 @@ const getDireitosEventuaisData = direitosEventuaisSheet => {
     return getDataFromSheet(direitosEventuaisSheet, fields);
 };
 
+/**
+ * Returns the sheet data, clear, sanitized and formated.
+ * 
+ * @param {Object} dadosCadastraisSheet - Sheet object containing data from "Dados Cadastrais".
+ */
 const getDadosCadastraisData = dadosCadastraisSheet => {
     const fields = [
         { fieldName: 'cpf', type: 'text' },
@@ -207,8 +236,7 @@ const getDadosCadastraisData = dadosCadastraisSheet => {
         { fieldName: 'matricula', type: 'text' },
         { fieldName: 'lotacao_de_origem', type: 'text' },
         { fieldName: 'orgao_de_origem', type: 'text' },
-        { fieldName: 'cargo_de_origem', type: 'text' },
-        
+        { fieldName: 'cargo_de_origem', type: 'text' },   
     ];
 
     return getDataFromSheet(dadosCadastraisSheet, fields);
