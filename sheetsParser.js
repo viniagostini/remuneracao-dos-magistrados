@@ -17,11 +17,31 @@ const sheetsParser = (sheetsJsonObject) => {
  * @param {Object} sheetObject 
  */
 const parseSheet = (fileName, sheetObject) => {
+    //TODO: remove coupling of "ano/mes referencia" from file name.
+    //TODO: get data from "tribunal"
+    //TODO: think about error handling design
     const mes_ano_referencia = utils.parseFileNameToDate(fileName);
     
-    
+    const contrachequeData = getContrachequeData(getContrachequeSheet(sheetObject)),
+          subsidioData = getSubsidioData(getSubsidioSheet(sheetObject)),  
+          indenizacoesData = getIndenizacoesData(getIndenizacoesSheet(sheetObject)),  
+          direitosEventuaisData = getDireitosEventuaisData(getDireitosEventuaisSheet(sheetObject)),  
+          dadosCadastraisData = getDadosCadastraisData(getDadosCadastraisSheet(sheetObject));
 
-    // returns [{magistrado}]
+    const magistradosData = [];
+    Object.keys(contrachequeData).forEach((key) => {
+        let magistradoData = {};
+        magistradoData = Object.assign(magistradoData, contrachequeData[key]);
+        magistradoData = Object.assign(magistradoData, subsidioData[key]);
+        magistradoData = Object.assign(magistradoData, indenizacoesData[key]);
+        magistradoData = Object.assign(magistradoData, direitosEventuaisData[key]);
+        magistradoData = Object.assign(magistradoData, dadosCadastraisData[key]);
+
+        magistradoData.mes_ano_referencia = mes_ano_referencia;
+        magistradosData.push(magistradoData);
+    });
+
+    return magistradosData;
 };
 
 //TODO: Find a better strategy than just list every possibility of sheet name.
@@ -101,19 +121,19 @@ const getFistDataLine = (sheetObject) => {
  * @param {Array} fields - An array of the itens that will be collected from each line of the sheet. 
  */
 const getDataFromSheet = (sheetObject, fields) => {
-    const sheetData = [];
+    const sheetData = {};
     const firstDataLine = getFistDataLine(sheetObject);
 
     sheetObject.forEach((line, index) => {
         if (index < firstDataLine || !isValidLine(line, fields.length)) return;
         
         const magistradoData = {};
-
+        let key;
         fields.forEach((field, index) => {
             magistradoData[field.fieldName] = clearData(line[index], field.type);
-            if (field.key) magistradoData.key = magistradoData[field.fieldName]; 
+            if (field.key) key = magistradoData[field.fieldName]; 
         });
-        sheetData.push(magistradoData);
+        sheetData[key] = magistradoData;
     });
 
     return sheetData; 
@@ -241,3 +261,9 @@ const getDadosCadastraisData = dadosCadastraisSheet => {
 
     return getDataFromSheet(dadosCadastraisSheet, fields);
 };
+
+const sheetJson = sheetsService.parseSheetsToJson(['./downloaded-sheets/abril-2018-0dd715f156597273f48327975e64d9ab.xls']);
+
+const allSheetsData = parseSheet('abril-2018-0dd715f156597273f48327975e64d9ab.xls', sheetJson['abril-2018-0dd715f156597273f48327975e64d9ab.xls']);
+
+console.log(JSON.stringify(allSheetsData));
