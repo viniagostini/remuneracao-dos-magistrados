@@ -2,13 +2,18 @@ const utils = require('./utils');
 const sheetsService = require('./sheetsService');
 
 /**
+ * Iterates over a json parsed sheets file and returns a single list with all the data.
  * 
  * @param {Object} sheetsJsonObject - Object where the keys are the file name and 
  *                                    the value is the sheetObject.
- * @returns
  */
 const sheetsParser = (sheetsJsonObject) => {
-
+    let sheetsData = [];
+    Object.keys(sheetsJsonObject).forEach((fileName) => {
+        const sheetData = parseSheet(fileName, sheetsJsonObject[fileName]);
+        sheetsData = sheetsData.concat(sheetData);
+    });
+    return sheetsData;
 };
 
 /**
@@ -31,12 +36,17 @@ const parseSheet = (fileName, sheetObject) => {
     const magistradosData = [];
     Object.keys(contrachequeData).forEach((key) => {
         let magistradoData = {};
-        magistradoData = Object.assign(magistradoData, contrachequeData[key]);
-        magistradoData = Object.assign(magistradoData, subsidioData[key]);
-        magistradoData = Object.assign(magistradoData, indenizacoesData[key]);
-        magistradoData = Object.assign(magistradoData, direitosEventuaisData[key]);
-        magistradoData = Object.assign(magistradoData, dadosCadastraisData[key]);
 
+        const sheetDataObjects = [
+            contrachequeData[key],
+            subsidioData[key],
+            indenizacoesData[key],
+            direitosEventuaisData[key],
+            dadosCadastraisData[key]
+        ]
+
+        magistradoData = Object.assign(magistradoData, ...sheetDataObjects);
+        
         magistradoData.mes_ano_referencia = mes_ano_referencia;
         magistradosData.push(magistradoData);
     });
@@ -262,8 +272,11 @@ const getDadosCadastraisData = dadosCadastraisSheet => {
     return getDataFromSheet(dadosCadastraisSheet, fields);
 };
 
-const sheetJson = sheetsService.parseSheetsToJson(['./downloaded-sheets/abril-2018-0dd715f156597273f48327975e64d9ab.xls']);
+const sheetJson = sheetsService.parseSheetsToJson([
+    './downloaded-sheets/abril-2018-0dd715f156597273f48327975e64d9ab.xls',
+    './downloaded-sheets/dezembro-2017-5a77388b0f7c150f1943f592095a0196.xls'
+]);
 
-const allSheetsData = parseSheet('abril-2018-0dd715f156597273f48327975e64d9ab.xls', sheetJson['abril-2018-0dd715f156597273f48327975e64d9ab.xls']);
+const allSheetsData = sheetsParser(sheetJson)
 
 console.log(JSON.stringify(allSheetsData));

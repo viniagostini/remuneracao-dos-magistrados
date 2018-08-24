@@ -63,6 +63,3 @@ typings/
 
 # intellij idea trash
 .idea/*
-
-# sheets
-downloaded-sheets/
