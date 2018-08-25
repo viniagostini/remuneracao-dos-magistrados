@@ -30,7 +30,7 @@ const parseSheet = (fileName, sheetObject) => {
     const contrachequeData = getContrachequeData(getContrachequeSheet(sheetObject)),
           subsidioData = getSubsidioData(getSubsidioSheet(sheetObject)),  
           indenizacoesData = getIndenizacoesData(getIndenizacoesSheet(sheetObject)),  
-          direitosEventuaisData = getDireitosEventuaisData(getDireitosEventuaisSheet(sheetObject)),  
+          direitosEventuaisData = getDireitosEventuaisData(getDireitosEventuaisSheet(sheetObject)), 
           dadosCadastraisData = getDadosCadastraisData(getDadosCadastraisSheet(sheetObject));
 
     const magistradosData = [];
@@ -43,7 +43,7 @@ const parseSheet = (fileName, sheetObject) => {
             indenizacoesData[key],
             direitosEventuaisData[key],
             dadosCadastraisData[key]
-        ]
+        ];
 
         magistradoData = Object.assign(magistradoData, ...sheetDataObjects);
         
@@ -104,7 +104,7 @@ const clearData = (data, type) => {
  * @returns {Boolean} true if it is a valid line.
  */
 const isValidLine = (line, fieldsLength) => line.length >= fieldsLength && 
-                                            !!line[1] && !!line[2] && line[1].length > 3;
+                                            !!line[0] && !!line[1] && line[1].length > 3;
 
 /**
  * Returns the first data line of the sheet object.
@@ -134,9 +134,9 @@ const getDataFromSheet = (sheetObject, fields) => {
     const sheetData = {};
     const firstDataLine = getFistDataLine(sheetObject);
 
-    sheetObject.forEach((line, index) => {
+    sheetObject.forEach((line, index) => {  
         if (index < firstDataLine || !isValidLine(line, fields.length)) return;
-        
+
         const magistradoData = {};
         let key;
         fields.forEach((field, index) => {
