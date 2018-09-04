@@ -1,13 +1,12 @@
-var path     = require("path");
-var express  = require("express");
-var multer   = require("multer");
-
+const path     = require("path");
+const express  = require("express");
+const multer   = require("multer");
+const parserController = require('./parserController');
 
 var app = express();
 
 const multerConfig = {
     fileFilter: (req, file, cb) => {
-        
         const filetypes = /zip/;
         const mimetype = filetypes.test(file.mimetype);
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
@@ -21,14 +20,7 @@ const multerConfig = {
     dest:'./uploads/'
 };
 
-app.post("/", multer(multerConfig).single('planilhas'), (req, res) => {
-    if (req.file){
-        var filepath = path.join(req.file.destination, req.file.filename);
-        console.log(filepath);
-    }
-
-    res.status(204).end();
-});
+app.post("/", multer(multerConfig).single('planilhas'), parserController.parseZippedSheets);
 
 //error handler
 //TODO: Improve this
