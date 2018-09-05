@@ -1,6 +1,4 @@
-const fs = require('fs');
 const xlsx = require('xlsx');
-
 
 /**
  * Given an array with the path to the sheets, parse then into json and returns an object where
@@ -18,8 +16,8 @@ const parseSheetsToJson = sheetsFilePath => {
 /**
  * Given an .xls or .xlsx file path, convert the file content into json.
  */
-const parseSheetToJson = sheetFilePath => {
-    const workbook = xlsx.readFile(sheetFilePath);
+const parseSheetToJson = sheetBuffer => {
+    const workbook = xlsx.read(sheetBuffer, {type:"buffer"});
     const result = {};
     workbook.SheetNames.forEach(sheetName => {
         const tab = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], {header:1});
@@ -28,4 +26,4 @@ const parseSheetToJson = sheetFilePath => {
     return result;
 };
 
-module.exports = {parseSheetsToJson};
+module.exports = {parseSheetsToJson, parseSheetToJson};
