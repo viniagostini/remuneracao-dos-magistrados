@@ -1,4 +1,5 @@
 const xlsx = require('xlsx');
+const parserCore = require('./parser.core');
 
 /**
  * Given an array with the path to the sheets, parse then into json and returns an object where
@@ -26,4 +27,16 @@ const parseSheetToJson = sheetBuffer => {
     return result;
 };
 
-module.exports = {parseSheetsToJson, parseSheetToJson};
+const getSheetData = (sheetBuffer, sheetName) => {
+    const sheetObj = {};
+    const jsonSheet = parseSheetToJson(sheetBuffer);
+    sheetObj[sheetName] = jsonSheet;
+    return parserCore.sheetsParser(sheetObj);
+};
+
+const joinAllSheetsData = (allSheetsData) => {
+    const allData = [];
+    return allSheetsData.reduce((allData, sheetData) => allData.concat(sheetData), []);
+};
+
+module.exports = {getSheetData, joinAllSheetsData};

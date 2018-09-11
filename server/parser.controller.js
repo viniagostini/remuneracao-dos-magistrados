@@ -1,11 +1,8 @@
 const path = require('path');
 const fs = require('fs');
 const stream = require('stream');
-
 const StreamZip = require('node-stream-zip');
-
 const sheetsService = require('./sheets.service');
-const parserCore = require('./parser.core');
 
 const PROMISE_FULFILLED = 'fulfilled';
 const PROMISE_REJECTED = 'rejected';
@@ -39,8 +36,11 @@ const parseZippedSheets = (req, res, next) => {
                     const data = results.filter(result => result.status === PROMISE_FULFILLED).map(result => result.data);
                     const err = results.filter(result => result.status === PROMISE_REJECTED).map(result => result.err);
                     //console.log(err);
-                    console.log(JSON.stringify(data));
-                    res.status(200).json(JSON.stringify(data));
+
+                    const joinedData = sheetsService.joinAllSheetsData(data);
+
+                    console.log(JSON.stringify(joinedData));
+                    res.status(200).json(JSON.stringify(joinedData));
                 });
         });
 
@@ -51,6 +51,8 @@ const parseZippedSheets = (req, res, next) => {
 
 };
 
+//TODO: Gerar arquivo de saída .zip contendo: data.json e errors.txt
+
 const getEntryBuffer = (zip, entryName) => {
     const entry = zip.entry(entryName);
     return zip.entryDataSync(entry);
@@ -58,13 +60,7 @@ const getEntryBuffer = (zip, entryName) => {
 
 const extractEntryData = async (entryName, entryBuffer) => {
     try {
-        const entryJSON = sheetsService.parseSheetToJson(entryBuffer);
-        
-        const sheetObj = {};
-        sheetObj[entryName] = entryJSON;
-        const sheetData = parserCore.sheetsParser(sheetObj);
-        
-        return sheetData;
+        return sheetsService.getSheetData(entryBuffer, entryName);
     } catch(err)  {
         throw ErrorHandler(err, entryName);
     }
