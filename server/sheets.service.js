@@ -14,7 +14,7 @@ const parseSheetsToJson = sheetsFilePath => {
 };
 
 /**
- * Given an .xls or .xlsx file path, convert the file content into json.
+ * Given an .xls or .xlsx file buffer, convert the file content into json.
  */
 const parseSheetToJson = sheetBuffer => {
     const workbook = xlsx.read(sheetBuffer, {type:"buffer"});

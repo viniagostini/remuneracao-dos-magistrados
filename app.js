@@ -1,7 +1,7 @@
 const path     = require("path");
 const express  = require("express");
 const multer   = require("multer");
-const parserController = require('./parserController');
+const parserController = require('./server/parser.controller');
 
 var app = express();
 

@@ -4,8 +4,8 @@ const stream = require('stream');
 
 const StreamZip = require('node-stream-zip');
 
-const sheetsService = require('./sheetsService');
-const parserCore = require('./parserCore');
+const sheetsService = require('./sheets.service');
+const parserCore = require('./parser.core');
 
 const PROMISE_FULFILLED = 'fulfilled';
 const PROMISE_REJECTED = 'rejected';
@@ -24,20 +24,23 @@ const parseZippedSheets = (req, res, next) => {
         zip.on('ready', () => {
             const zipEntries = zip.entries();
             
-            const errors = [];
-            const allData = [];
             const promises = [];
             Object.keys(zipEntries).forEach((entryName) => {
-                const promise = extractEntryData(entryName, zip);
+                const entryBuffer = getEntryBuffer(zip, entryName);
+                const promise = extractEntryData(entryName, entryBuffer);
                 promises.push(promise);
             }); 
             
+            
+            const errors = [];
+            const allData = [];
             Promise.all(promises.map(reflectPromise))
                 .then(results => {
-                    const success = results.filter(res => res.status === PROMISE_FULFILLED).map(res => res.data);
-                    const err = results.filter(res => res.status === PROMISE_REJECTED).map(res => res.err);
-                    console.log(err);
-                    res.status(200).json(JSON.stringify(success));
+                    const data = results.filter(result => result.status === PROMISE_FULFILLED).map(result => result.data);
+                    const err = results.filter(result => result.status === PROMISE_REJECTED).map(result => result.err);
+                    //console.log(err);
+                    console.log(JSON.stringify(data));
+                    res.status(200).json(JSON.stringify(data));
                 });
         });
 
@@ -48,10 +51,13 @@ const parseZippedSheets = (req, res, next) => {
 
 };
 
-const extractEntryData = async (entryName, zip) => {
+const getEntryBuffer = (zip, entryName) => {
+    const entry = zip.entry(entryName);
+    return zip.entryDataSync(entry);
+};
+
+const extractEntryData = async (entryName, entryBuffer) => {
     try {
-        const entry = zip.entry(entryName);
-        const entryBuffer = zip.entryDataSync(entry);
         const entryJSON = sheetsService.parseSheetToJson(entryBuffer);
         
         const sheetObj = {};
@@ -60,13 +66,15 @@ const extractEntryData = async (entryName, zip) => {
         
         return sheetData;
     } catch(err)  {
-        throw new Error(err, entryName);
+        throw ErrorHandler(err, entryName);
     }
 };
 
-const Error = (error, filename) => {
-    this.error = err;
-    this.filename = filename;
+const ErrorHandler = (error, filename) => {
+    return {
+        error,
+        filename
+    }
 };
 
 module.exports = {parseZippedSheets};
