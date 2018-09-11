@@ -7,8 +7,10 @@ const StreamZip = require('node-stream-zip');
 const sheetsService = require('./sheetsService');
 const parserCore = require('./parserCore');
 
-const reflectPromise = p => p.then(data => ({data, status: "fulfilled" }),
-                                   err => ({err, status: "rejected" }));
+const PROMISE_FULFILLED = 'fulfilled';
+const PROMISE_REJECTED = 'rejected';
+
+const reflectPromise = promise => promise.then(data => ({data, status: PROMISE_FULFILLED }), err => ({err, status: PROMISE_REJECTED }));
 
 const parseZippedSheets = (req, res, next) => {
     if (req.file){
@@ -28,24 +30,12 @@ const parseZippedSheets = (req, res, next) => {
             Object.keys(zipEntries).forEach((entryName) => {
                 const promise = extractEntryData(entryName, zip);
                 promises.push(promise);
-            });
-            
-            // Promise.all(promises.map(reflectPromise)).then((results) => {
-            //     const success = results.filter(x => x.status === "resolved");
-            //     const errors = results.filter(x => x.status === "resolved");
-
-            //     console.log(success);
-            //     console.log(errors.map(result => result.err));
-            //     zip.close();
-    
-            //     res.status(200).json(JSON.stringify({}));
-            // });
+            }); 
             
             Promise.all(promises.map(reflectPromise))
                 .then(results => {
-                    const success = results.filter(res => res.status === 'fulfilled').map(res => res.data);
-                    const err = results.filter(res => res.status === 'rejected').map(res => res.err);
-                    console.log(JSON.stringify(success));
+                    const success = results.filter(res => res.status === PROMISE_FULFILLED).map(res => res.data);
+                    const err = results.filter(res => res.status === PROMISE_REJECTED).map(res => res.err);
                     console.log(err);
                     res.status(200).json(JSON.stringify(success));
                 });
@@ -59,15 +49,24 @@ const parseZippedSheets = (req, res, next) => {
 };
 
 const extractEntryData = async (entryName, zip) => {
-    const entry = zip.entry(entryName);
-    const entryBuffer = zip.entryDataSync(entry);
-    const entryJSON = sheetsService.parseSheetToJson(entryBuffer);
-    
-    const sheetObj = {};
-    sheetObj[entryName] = entryJSON;
-    const sheetData = parserCore.sheetsParser(sheetObj);
-    
-    return sheetData;
+    try {
+        const entry = zip.entry(entryName);
+        const entryBuffer = zip.entryDataSync(entry);
+        const entryJSON = sheetsService.parseSheetToJson(entryBuffer);
+        
+        const sheetObj = {};
+        sheetObj[entryName] = entryJSON;
+        const sheetData = parserCore.sheetsParser(sheetObj);
+        
+        return sheetData;
+    } catch(err)  {
+        throw new Error(err, entryName);
+    }
+};
+
+const Error = (error, filename) => {
+    this.error = err;
+    this.filename = filename;
 };
 
 module.exports = {parseZippedSheets};
