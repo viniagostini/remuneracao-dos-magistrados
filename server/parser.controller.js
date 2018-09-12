@@ -3,7 +3,6 @@ const fs = require('fs');
 const stream = require('stream');
 const StreamZip = require('node-stream-zip');
 const CreateZip = new require('node-zip')();
-const shortid = require('shortid');
 
 const sheetsService = require('./sheets.service');
 
