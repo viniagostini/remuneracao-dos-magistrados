@@ -26,28 +26,26 @@ const parseZippedSheets = (req, res, next) => {
         zip.on('ready', () => {
             const zipEntries = zip.entries();
             
-            const promises = [];
+            const allExtractedData = [];
+            const allErrors = [];
             Object.keys(zipEntries).forEach((entryName) => {
                 console.log(entryName);
                 const entryBuffer = getEntryBuffer(zip, entryName);
-                const promise = extractEntryData(entryName, entryBuffer);
-                promises.push(promise);
+                let extractedData = [];
+                try{
+                    const extractedData = extractEntryData(entryName, entryBuffer);
+                } catch (err) {
+                    allErrors.push(err);
+                }
+
+                allExtractedData.push(extractedData);
             }); 
             
-            
-            const errors = [];
-            const allData = [];
-            Promise.all(promises.map(reflectPromise))
-                .then(results => {
-                    const data = results.filter(result => result.status === PROMISE_FULFILLED).map(result => result.data);
-                    const errors = results.filter(result => result.status === PROMISE_REJECTED).map(result => result.err);
-                    
-                    const joinedData = sheetsService.joinAllSheetsData(data);
-                    fs.unlinkSync(filepath);
-                    respond(res, joinedData, errors);
-                });
+            const joinedData = sheetsService.joinAllSheetsData(allExtractedData);
+            fs.unlinkSync(filepath);
+            respond(res, joinedData, allErrors);
         });
-
+        
         zip.on('error', console.log);
     } else {
         res.status(400).json({});
@@ -78,7 +76,7 @@ const getEntryBuffer = (zip, entryName) => {
     return zip.entryDataSync(entry);
 };
 
-const extractEntryData = async (entryName, entryBuffer) => {
+const extractEntryData = (entryName, entryBuffer) => {
     try {
         return sheetsService.getSheetData(entryBuffer, entryName);
     } catch(err)  {
