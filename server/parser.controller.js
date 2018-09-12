@@ -59,8 +59,6 @@ const parseZippedSheets = (req, res, next) => {
 
 
 const respond = (res, data, errors) => {
-    const fileName = shortid.generate();
-
     CreateZip.file('data.json', JSON.stringify(data));
     CreateZip.file('errors.txt', JSON.stringify(errors));
 
