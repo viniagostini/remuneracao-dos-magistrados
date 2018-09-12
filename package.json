@@ -1,6 +1,9 @@
 {
   "name": "remuneracao-dos-magistrados",
   "version": "0.0.1",
+  "engines": {
+    "node": "10.1.0"
+  },
   "description": "Scrapper + Parser de dados de planilhas de remuneração dos magistrados.",
   "main": "app.js",
   "scripts": {
