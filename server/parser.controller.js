@@ -32,14 +32,12 @@ const parseZippedSheets = (req, res, next) => {
                 const entryBuffer = getEntryBuffer(zip, entryName);
                 let extractedData = [];
                 try{
-                    const extractedData = extractEntryData(entryName, entryBuffer);
+                    extractedData = extractEntryData(entryName, entryBuffer);
                 } catch (err) {
                     allErrors.push(err);
                 }
-
                 allExtractedData.push(extractedData);
             }); 
-            
             const joinedData = sheetsService.joinAllSheetsData(allExtractedData);
             fs.unlinkSync(filepath);
             respond(res, joinedData, allErrors);
@@ -54,7 +52,6 @@ const parseZippedSheets = (req, res, next) => {
 
 //TODO: Receber tipo de saída desejado (json ou csv)
 //TODO: Logger
-//TODO: PM2
 //TODO: Corrigir tratamento de erros
 
 
