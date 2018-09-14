@@ -1,5 +1,4 @@
 const utils = require('./utils');
-const sheetsService = require('./sheetsService');
 
 /**
  * Iterates over a json parsed sheets file and returns a single list with all the data.
@@ -272,11 +271,4 @@ const getDadosCadastraisData = dadosCadastraisSheet => {
     return getDataFromSheet(dadosCadastraisSheet, fields);
 };
 
-const sheetJson = sheetsService.parseSheetsToJson([
-    './downloaded-sheets/abril-2018-0dd715f156597273f48327975e64d9ab.xls',
-    './downloaded-sheets/dezembro-2017-5a77388b0f7c150f1943f592095a0196.xls'
-]);
-
-const allSheetsData = sheetsParser(sheetJson)
-
-console.log(JSON.stringify(allSheetsData));
+module.exports = {sheetsParser};

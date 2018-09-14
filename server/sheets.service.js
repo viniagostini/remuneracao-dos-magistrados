@@ -1,6 +1,5 @@
-const fs = require('fs');
 const xlsx = require('xlsx');
-
+const parserCore = require('./parser.core');
 
 /**
  * Given an array with the path to the sheets, parse then into json and returns an object where
@@ -16,10 +15,10 @@ const parseSheetsToJson = sheetsFilePath => {
 };
 
 /**
- * Given an .xls or .xlsx file path, convert the file content into json.
+ * Given an .xls or .xlsx file buffer, convert the file content into json.
  */
-const parseSheetToJson = sheetFilePath => {
-    const workbook = xlsx.readFile(sheetFilePath);
+const parseSheetToJson = sheetBuffer => {
+    const workbook = xlsx.read(sheetBuffer, {type:"buffer"});
     const result = {};
     workbook.SheetNames.forEach(sheetName => {
         const tab = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], {header:1});
@@ -28,4 +27,16 @@ const parseSheetToJson = sheetFilePath => {
     return result;
 };
 
-module.exports = {parseSheetsToJson};
+const getSheetData = (sheetBuffer, sheetName) => {
+    const sheetObj = {};
+    const jsonSheet = parseSheetToJson(sheetBuffer);
+    sheetObj[sheetName] = jsonSheet;
+    return parserCore.sheetsParser(sheetObj);
+};
+
+const joinAllSheetsData = (allSheetsData) => {
+    const allData = [];
+    return allSheetsData.reduce((allData, sheetData) => allData.concat(sheetData), []);
+};
+
+module.exports = {getSheetData, joinAllSheetsData};
