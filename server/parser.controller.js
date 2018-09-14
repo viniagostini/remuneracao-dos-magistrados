@@ -2,17 +2,22 @@ const path = require('path');
 const fs = require('fs');
 const stream = require('stream');
 const StreamZip = require('node-stream-zip');
-const CreateZip = new require('node-zip')();
+const NodeZip = require('node-zip');
+
+var jsonexport = require('jsonexport');
 
 const sheetsService = require('./sheets.service');
 
 const PROMISE_FULFILLED = 'fulfilled';
 const PROMISE_REJECTED = 'rejected';
 
-const reflectPromise = promise => promise.then(data => ({data, status: PROMISE_FULFILLED }), err => ({err, status: PROMISE_REJECTED }));
+const JSON_FORMART = 'json';
+const CSV = 'csv';
 
 const parseZippedSheets = (req, res, next) => {
-    if (req.file){
+    const responseType = req.body.formato_saida || JSON_FORMART;
+
+    if (req.file){        
         var filepath = path.join(req.file.destination, req.file.filename);
 
         const zip = new StreamZip({
@@ -40,7 +45,7 @@ const parseZippedSheets = (req, res, next) => {
             }); 
             const joinedData = sheetsService.joinAllSheetsData(allExtractedData);
             fs.unlinkSync(filepath);
-            respond(res, joinedData, allErrors);
+            respond(res, joinedData, allErrors, responseType);
         });
         
         zip.on('error', console.log);
@@ -49,21 +54,29 @@ const parseZippedSheets = (req, res, next) => {
     }
 
 };
-
-//TODO: Receber tipo de saída desejado (json ou csv)
 //TODO: Logger
 //TODO: Corrigir tratamento de erros
 
 
-const respond = (res, data, errors) => {
-    CreateZip.file('data.json', JSON.stringify(data));
-    CreateZip.file('errors.txt', JSON.stringify(errors));
-
-    const zipData = CreateZip.generate({ base64:false, compression: 'DEFLATE' });
-
-    console.log("foi");
-    res.end(zipData, 'binary');
+const respond = (res, data, errors, responseType) => {
+    if (responseType === CSV) {
+        jsonexport(data, (err, csv) => {
+            createAndSendResponseZip(res, 'data.csv', csv, errors);
+        });
+    } else {
+        createAndSendResponseZip(res, 'data.json', JSON.stringify(data), errors);
+    }
 };
+
+const createAndSendResponseZip = (res, responseFileName, responseFileData, errors) => {
+    const CreateZip = new NodeZip();
+    
+    CreateZip.file('errors.txt', JSON.stringify(errors));
+    CreateZip.file(responseFileName, responseFileData);
+    
+    const zipData = CreateZip.generate({ base64:false, compression: 'DEFLATE' });
+    res.end(zipData, 'binary');        
+}
 
 const getEntryBuffer = (zip, entryName) => {
     const entry = zip.entry(entryName);

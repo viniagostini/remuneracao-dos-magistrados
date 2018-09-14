@@ -2,8 +2,10 @@ const path     = require("path");
 const express  = require("express");
 const multer   = require("multer");
 const parserController = require('./server/parser.controller');
+const bodyParser = require('body-parser');
 
 var app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const multerConfig = {
     fileFilter: (req, file, cb) => {
