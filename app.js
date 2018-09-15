@@ -12,7 +12,6 @@ const multerConfig = {
         console.log(file);
 
         const filetypes = /zip/;
-        //const mimetype = true || filetypes.test(file.mimetype);
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
 
         if (extname) {

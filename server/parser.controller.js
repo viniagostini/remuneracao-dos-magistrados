@@ -17,7 +17,7 @@ const parseZippedSheets = (req, res, next) => {
 
     if (req.file){        
         var filepath = path.join(req.file.destination, req.file.filename);
-        
+
         const zip = new StreamZip({
             file: filepath,
             storeEntries: true
@@ -46,7 +46,10 @@ const parseZippedSheets = (req, res, next) => {
             respond(res, joinedData, allErrors, responseType);
         });
         
-        zip.on('error', (err) => console.log("zip err: ", JSON.stringify(err)));
+        zip.on('error', (err) => res.status(400).json({
+            err: err || "zip error",
+            fileParams: file
+        }));
     } else {
         res.status(400).json({});
     }
