@@ -27,6 +27,7 @@ app.post("/", multer(multerConfig).single('planilhas'), parserController.parseZi
 //error handler
 //TODO: Improve this
 app.use((err, req, res, next) => {
+    console.log(err);
     res.status(500).json({err});
 });
 
