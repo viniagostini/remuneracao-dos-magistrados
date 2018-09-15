@@ -8,11 +8,9 @@ var jsonexport = require('jsonexport');
 
 const sheetsService = require('./sheets.service');
 
-const PROMISE_FULFILLED = 'fulfilled';
-const PROMISE_REJECTED = 'rejected';
-
 const JSON_FORMART = 'json';
 const CSV = 'csv';
+const HEADLESS_CSV = 'headless_csv';
 
 const parseZippedSheets = (req, res, next) => {
     const responseType = req.body.formato_saida || JSON_FORMART;
@@ -59,8 +57,11 @@ const parseZippedSheets = (req, res, next) => {
 
 
 const respond = (res, data, errors, responseType) => {
-    if (responseType === CSV) {
-        jsonexport(data, (err, csv) => {
+    if (responseType === CSV || responseType === HEADLESS_CSV) {
+        const csvOptions = {
+            includeHeaders: responseType !== HEADLESS_CSV
+        }
+        jsonexport(data, csvOptions, (err, csv) => {
             createAndSendResponseZip(res, 'data.csv', csv, errors);
         });
     } else {
