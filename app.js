@@ -9,6 +9,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const multerConfig = {
     fileFilter: (req, file, cb) => {
+        console.log(file);
+
         const filetypes = /zip/;
         const mimetype = filetypes.test(file.mimetype);
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
