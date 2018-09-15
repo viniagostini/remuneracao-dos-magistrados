@@ -28,7 +28,7 @@ app.post("/", multer(multerConfig).single('planilhas'), parserController.parseZi
 //TODO: Improve this
 app.use((err, req, res, next) => {
     console.log(err);
-    res.status(500).json({err});
+    res.status(500).json({err});    
 });
 
 app.listen(process.env.PORT || 3000, () => {

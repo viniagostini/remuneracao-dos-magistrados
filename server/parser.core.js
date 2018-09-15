@@ -26,6 +26,7 @@ const parseSheet = (fileName, sheetObject) => {
     //TODO: think about error handling design
     const mes_ano_referencia = utils.parseFileNameToDate(fileName);
     
+    console.log(getOrgao(getContrachequeSheet(sheetObject)));
     const contrachequeData = getContrachequeData(getContrachequeSheet(sheetObject)),
           subsidioData = getSubsidioData(getSubsidioSheet(sheetObject)),  
           indenizacoesData = getIndenizacoesData(getIndenizacoesSheet(sheetObject)),  
@@ -122,6 +123,25 @@ const getFistDataLine = (sheetObject) => {
 
   return firstDataLine;
 };
+
+const getOrgao = (sheetObject) => {
+    const orgaoLabel = 'Órgão';
+    let orgaoValue = '';
+    
+    sheetObject.some((line) => {
+        let found = false;
+        if (line && line.length && line[0] === orgaoLabel) {
+            line.some((value, index) => {
+                orgaoValue = value;
+                found = Boolean(value) && index > 0;
+                return found;
+            })
+        }
+        return found;
+    });
+
+    return orgaoValue;
+}
 
 /**
  * Given a sheetObject and an array of fields, extracts the sheet data according to the fields.

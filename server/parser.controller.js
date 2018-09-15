@@ -46,7 +46,7 @@ const parseZippedSheets = (req, res, next) => {
             respond(res, joinedData, allErrors, responseType);
         });
         
-        zip.on('error', console.log);
+        zip.on('error', (err) => console.log("zip err: ", JSON.stringify(err)));
     } else {
         res.status(400).json({});
     }
