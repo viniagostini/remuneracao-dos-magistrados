@@ -5,6 +5,7 @@ API que recebe um .zip com planilhas de remunerações de magistrados retiradas 
 A resposta da API é um aquivo .zip contendo os seguintes arquivos:
 * **errors.txt**: Contém os erros gerados pelas planilhas passadas.
 * **data.<csv | json>**: Dados retirados das planilhas no formato escolhido.
+* **descriptor.json**: Documentação dos dados.
 
 
 ## Para Rodar

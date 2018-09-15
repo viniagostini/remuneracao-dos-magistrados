@@ -71,7 +71,10 @@ const respond = (res, data, errors, responseType) => {
 const createAndSendResponseZip = (res, responseFileName, responseFileData, errors) => {
     const CreateZip = new NodeZip();
     
+    const descriptor = fs.readFileSync(__dirname + '/../descriptor.json');
+
     CreateZip.file('errors.txt', JSON.stringify(errors));
+    CreateZip.file('descriptor.json', descriptor);
     CreateZip.file(responseFileName, responseFileData);
     
     const zipData = CreateZip.generate({ base64:false, compression: 'DEFLATE' });
