@@ -21,12 +21,13 @@ const sheetsParser = (sheetsJsonObject) => {
  * @param {Object} sheetObject 
  */
 const parseSheet = (fileName, sheetObject) => {
-    //TODO: remove coupling of "ano/mes referencia" from file name.
-    //TODO: get data from "tribunal"
     //TODO: think about error handling design
-    const mes_ano_referencia = utils.parseFileNameToDate(fileName);
-    
-    console.log(getOrgao(getContrachequeSheet(sheetObject)));
+    const mes_ano_referencia = getSheetMetadata(getContrachequeSheet(sheetObject), 'Mês/Ano de Referência');
+    const orgao = getSheetMetadata(getContrachequeSheet(sheetObject), 'Órgão');
+
+    console.log(mes_ano_referencia);
+    console.log(orgao);
+
     const contrachequeData = getContrachequeData(getContrachequeSheet(sheetObject)),
           subsidioData = getSubsidioData(getSubsidioSheet(sheetObject)),  
           indenizacoesData = getIndenizacoesData(getIndenizacoesSheet(sheetObject)),  
@@ -48,6 +49,7 @@ const parseSheet = (fileName, sheetObject) => {
         magistradoData = Object.assign(magistradoData, ...sheetDataObjects);
         
         magistradoData.mes_ano_referencia = mes_ano_referencia;
+        magistradoData.orgao = orgao;
         magistradosData.push(magistradoData);
     });
 
@@ -141,7 +143,25 @@ const getOrgao = (sheetObject) => {
     });
 
     return orgaoValue;
-}
+};
+
+const getSheetMetadata = (sheetObject, dataLabel) => {
+    let dataValue = '';
+    
+    sheetObject.some((line) => {
+        let found = false;
+        if (line && line.length && line[0] === dataLabel) {
+            line.some((value, index) => {
+                dataValue = value;
+                found = Boolean(value) && index > 0;
+                return found;
+            })
+        }
+        return found;
+    });
+
+    return dataValue;
+};
 
 /**
  * Given a sheetObject and an array of fields, extracts the sheet data according to the fields.

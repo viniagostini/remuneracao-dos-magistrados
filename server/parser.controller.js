@@ -17,7 +17,7 @@ const parseZippedSheets = (req, res, next) => {
 
     if (req.file){        
         var filepath = path.join(req.file.destination, req.file.filename);
-
+        
         const zip = new StreamZip({
             file: filepath,
             storeEntries: true

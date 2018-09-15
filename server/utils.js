@@ -39,4 +39,20 @@ const clearTextData = (dirtyText) => {
   return dirtyText.trim();
 };
 
+const isDDMMYYY = (stringDate) => {
+  const regex = /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/
+  return regex.test(stringDate)  
+}
+
+
+const isMMYYYY = (stringDate) => {
+  const regex = /[\d]{2}\/[\d]{4}/;
+  return regex.test(stringDate)  
+}
+
+const isMMYY = (stringDate) => {
+  const regex = /[\d]{2}\/[\d]{2}/;
+  return regex.test(stringDate)  
+}
+
 module.exports = {dateFormater, parseFileNameToDate, clearNumberData, clearTextData};
