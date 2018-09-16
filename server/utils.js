@@ -39,20 +39,68 @@ const clearTextData = (dirtyText) => {
   return dirtyText.trim();
 };
 
-const isDDMMYYY = (stringDate) => {
+/* 
+can be arrive as
+  dd/mm/yyyy or
+  mm/yyyy or
+  mm/yy
+
+must go out as
+yyyy-mm
+*/
+const formatDate = (stringDate) => {
+  let namesList = []; 
+  let DD, MM, YY, YYYY;
+
+  if(isDDMMYYYY(stringDate)) {
+    const [dd, mm, yyyy] = stringDate.split('/');
+    DD = dd;
+    MM = mm;
+    YYYY = yyyy;
+  } 
+
+  if(isMMYYYY(stringDate)) {
+    const [mm, yyyy] = stringDate.split('/');
+    MM = mm;
+    YYYY = yyyy;
+  }
+
+  if(isDDMMYY(stringDate)) {
+    const [dd, mm, yy] = stringDate.split('/');
+    MM = mm;
+    YYYY = '20'+yy;
+  }
+  
+  if(isMMYY(stringDate)) {
+    const [mm, yy] = stringDate.split('/');
+    MM = mm;
+    YYYY = '20'+yy;
+  }
+
+  return MM && YYYY ? `${MM}-${YYYY}` : stringDate;
+}
+
+const isDDMMYYYY = (stringDate) => {
   const regex = /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/
   return regex.test(stringDate)  
-}
+};
+
+const isDDMMYY = (stringDate) => {
+  const regex = /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{2}$/
+  return regex.test(stringDate)  
+};
 
 
 const isMMYYYY = (stringDate) => {
-  const regex = /[\d]{2}\/[\d]{4}/;
+  const regex = /^[\d]{2}\/[\d]{4}$/;
   return regex.test(stringDate)  
-}
+};
 
 const isMMYY = (stringDate) => {
-  const regex = /[\d]{2}\/[\d]{2}/;
+  const regex = /^[\d]{2}\/[\d]{2}$/;
   return regex.test(stringDate)  
-}
+};
 
-module.exports = {dateFormater, parseFileNameToDate, clearNumberData, clearTextData};
+
+
+//module.exports = {dateFormater, parseFileNameToDate, clearNumberData, clearTextData, formatDate};

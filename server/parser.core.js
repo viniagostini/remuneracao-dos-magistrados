@@ -22,7 +22,7 @@ const sheetsParser = (sheetsJsonObject) => {
  */
 const parseSheet = (fileName, sheetObject) => {
     //TODO: think about error handling design
-    const mes_ano_referencia = getSheetMetadata(getContrachequeSheet(sheetObject), 'Mês/Ano de Referência');
+    const mes_ano_referencia = utils.formatDate(getSheetMetadata(getContrachequeSheet(sheetObject), 'Mês/Ano de Referência'));
     const orgao = getSheetMetadata(getContrachequeSheet(sheetObject), 'Órgão');
 
     console.log(mes_ano_referencia);
