@@ -101,6 +101,4 @@ const isMMYY = (stringDate) => {
   return regex.test(stringDate)  
 };
 
-
-
-//module.exports = {dateFormater, parseFileNameToDate, clearNumberData, clearTextData, formatDate};
+module.exports = {dateFormater, parseFileNameToDate, clearNumberData, clearTextData, formatDate};
