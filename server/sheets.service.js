@@ -18,7 +18,9 @@ const parseSheetsToJson = sheetsFilePath => {
  * Given an .xls or .xlsx file buffer, convert the file content into json.
  */
 const parseSheetToJson = sheetBuffer => {
+    const t1 = new Date();
     const workbook = xlsx.read(sheetBuffer, {type:"buffer"});
+    console.log('xlsx read -> ', (new Date() - t1))
     const result = {};
     workbook.SheetNames.forEach(sheetName => {
         const tab = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], {header:1});
@@ -29,7 +31,11 @@ const parseSheetToJson = sheetBuffer => {
 
 const getSheetData = (sheetBuffer, sheetName) => {
     const sheetObj = {};
+    const t1 = new Date();
     const jsonSheet = parseSheetToJson(sheetBuffer);
+    const t2 = new Date() - t1;
+    console.log('parseSheetToJson -> ', t2);
+
     sheetObj[sheetName] = jsonSheet;
     return parserCore.sheetsParser(sheetObj);
 };
@@ -39,4 +45,4 @@ const joinAllSheetsData = (allSheetsData) => {
     return allSheetsData.reduce((allData, sheetData) => allData.concat(sheetData), []);
 };
 
-module.exports = {getSheetData, joinAllSheetsData};
+module.exports = {getSheetData, joinAllSheetsData, parseSheetToJson};

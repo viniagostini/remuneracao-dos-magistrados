@@ -6,10 +6,7 @@
   },
   "description": "Scrapper + Parser de dados de planilhas de remuneração dos magistrados.",
   "main": "app.js",
-  "scripts": {
-    "preinstall": "npm install pm2 -g",
-    "start": "pm2-runtime app.js -i max"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/viniagostini/remuneracao-dos-magistrados.git"
